@@ -29,7 +29,7 @@ public class MovieCatalogResource {
 			 // Para cada MovieId, chamamos MovieInfoService e obtemos os detalhes
 			 Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + rating.getMovieId(), Movie.class);
 			 // Juntamos os dados do RatingDataService e do MovieInfoService
-			 return new CatalogItem(movie.getName(), "Just an fast cars movie.", rating.getRating());
+			 return new CatalogItem(movie.getName(), "HARDCODED - REPLACE WITH DESCRIPTION", rating.getRating());
 			 
 		 })
 		 .collect(Collectors.toList());
