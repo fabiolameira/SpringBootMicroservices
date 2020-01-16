@@ -1,6 +1,5 @@
 package com.microservices.moviecatalogservice.resources;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.microservices.moviecatalogservice.models.CatalogItem;
 import com.microservices.moviecatalogservice.models.Movie;
-import com.microservices.moviecatalogservice.models.Rating;
+import com.microservices.moviecatalogservice.models.UserRating;
 
 @RestController
 @RequestMapping("/catalog")
@@ -28,29 +27,28 @@ public class MovieCatalogResource {
 	@RequestMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 				
-		List<Rating> ratings = Arrays.asList(
-				new Rating("1001", 4),
-				new Rating("1002", 3),
-				new Rating("1003", 5));
+		UserRating ratings = restTemplate.getForObject("http://localhost:8083/ratingsdata/users/" + userId, UserRating.class);
 		
-		 return ratings.stream().map(rating -> {
-			 
-			 /* Utilizando o WebClientBuilder para fazer chamadas.
-			 Movie movie = webClientBuilder.build()
-			 	.get()
-			 	.uri("http://localhost:8082/movies/" + rating.getMovieId())
-			 	.retrieve()
-			 	.bodyToMono(Movie.class)
-			 	.block();
-		 	*/
-			 
-			 // Utilizando o RestTemplate para fazer chamadas.
+		 return ratings.getUserRating().stream().map(rating -> {
+			 // Para cada MovieId, chamamos MovieInfoService e obtemos os detalhes
 			 Movie movie = restTemplate.getForObject("http://localhost:8082/movies/" + rating.getMovieId(), Movie.class);
+			 // Juntamos os dados do RatingDataService e do MovieInfoService
 			 return new CatalogItem(movie.getName(), "Just an fast cars movie.", rating.getRating());
+			 
 		 })
 		 .collect(Collectors.toList());
-		
 		
 	}
 
 }
+
+
+
+/* Utilizando o WebClientBuilder em vez do RestTemplate para fazer chamadas.
+Movie movie = webClientBuilder.build()
+	.get()
+	.uri("http://localhost:8082/movies/" + rating.getMovieId())
+	.retrieve()
+	.bodyToMono(Movie.class)
+	.block();
+*/
