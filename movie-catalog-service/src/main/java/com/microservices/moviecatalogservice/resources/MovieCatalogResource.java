@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.microservices.moviecatalogservice.models.CatalogItem;
 import com.microservices.moviecatalogservice.models.Movie;
@@ -20,9 +19,6 @@ public class MovieCatalogResource {
 	
 	@Autowired
 	private RestTemplate restTemplate;
-	
-	@Autowired
-	private WebClient.Builder webClientBuilder;
 	
 	@RequestMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
@@ -43,8 +39,12 @@ public class MovieCatalogResource {
 }
 
 
-
 /* Utilizando o WebClientBuilder em vez do RestTemplate para fazer chamadas.
+ * 
+
+@Autowired
+private WebClient.Builder webClientBuilder;
+
 Movie movie = webClientBuilder.build()
 	.get()
 	.uri("http://localhost:8082/movies/" + rating.getMovieId())
