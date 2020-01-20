@@ -2,12 +2,21 @@ package com.microservices.ratingsdataservice.models;
 
 import java.util.List;
 
-public class Ratings {
+public class UserRatings {
 	
+	private String userId;
 	private List<Rating> ratings;
 	
-	public Ratings() {
+	public UserRatings() {
 		super();
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public List<Rating> getRatings() {
