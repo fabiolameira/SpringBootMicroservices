@@ -12,7 +12,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.microservices.moviecatalogservice.models.CatalogItem;
 import com.microservices.moviecatalogservice.models.Movie;
-import com.microservices.moviecatalogservice.models.UserRating;
+import com.microservices.moviecatalogservice.models.Rating;
+import com.microservices.moviecatalogservice.models.Ratings;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
@@ -26,17 +27,23 @@ public class MovieCatalogResource {
 	@HystrixCommand(fallbackMethod = "getCatalogFallback")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 				
-		UserRating ratings = restTemplate.getForObject("http://ratings-data-service/ratingsdata/users/" + userId, UserRating.class);
+		Ratings ratings = getUserRating(userId);
 		
-		 return ratings.getUserRating().stream().map(rating -> {
-			 // Para cada MovieId, chamamos MovieInfoService e obtemos os detalhes
-			 Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + rating.getMovieId(), Movie.class);
-			 // Juntamos os dados do RatingDataService e do MovieInfoService
-			 return new CatalogItem(movie.getName(), movie.getDescription(), rating.getRating());
-			 
-		 })
-		 .collect(Collectors.toList());
+		 return ratings.getRatings()
+				 .stream().map(rating -> getCatalogItem(rating))
+				 .collect(Collectors.toList());
 		
+	}
+
+	private CatalogItem getCatalogItem(Rating rating) {
+		// Para cada MovieId, chamamos MovieInfoService e obtemos os detalhes
+		 Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + rating.getMovieId(), Movie.class);
+		 // Juntamos os dados do RatingDataService e do MovieInfoService
+		 return new CatalogItem(movie.getName(), movie.getDescription(), rating.getRating());
+	}
+
+	private Ratings getUserRating(String userId) {
+		return restTemplate.getForObject("http://ratings-data-service/ratingsdata/users/" + userId, Ratings.class);
 	}
 	
 	public List<CatalogItem> getCatalogFallback(@PathVariable("userId") String userId) {

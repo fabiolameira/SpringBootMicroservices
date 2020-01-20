@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.microservices.ratingsdataservice.models.Rating;
-import com.microservices.ratingsdataservice.models.UserRating;
+import com.microservices.ratingsdataservice.models.Ratings;
 
 @RestController
 @RequestMapping("/ratingsdata")
@@ -20,15 +20,15 @@ public class RatingsResource {
     }
     
     @RequestMapping("users/{userId}")
-    public UserRating getUserMovieRatings(@PathVariable("userId") String userId) {
+    public Ratings getUserMovieRatings(@PathVariable("userId") String userId) {
     	
     	List<Rating> ratings = Arrays.asList(
 				new Rating("100", 4),
 				new Rating("550", 3),
 				new Rating("560", 5));
     	
-    	UserRating userRating = new UserRating();
-    	userRating.setUserRating(ratings);
+    	Ratings userRating = new Ratings();
+    	userRating.setRatings(ratings);
     	
 		return userRating;
     }
